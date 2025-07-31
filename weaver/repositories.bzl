@@ -304,7 +304,7 @@ def _compute_file_checksum(repository_ctx, file_path):
         checksum = result.stdout.strip()
     else:
         # shasum output format: "checksum filename"
-        checksum = result.stdout.split()[0]
+        checksum = result.stdout.split(" ")[0]
     
     return checksum
 
