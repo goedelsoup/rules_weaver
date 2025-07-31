@@ -1,0 +1,86 @@
+load("//weaver:defs.bzl", "weaver_schema", "weaver_generate", "weaver_validate_test", "weaver_docs")
+
+package(default_visibility = ["//visibility:public"])
+
+# Sample semantic convention schemas for testing
+weaver_schema(
+    name = "sample_schemas",
+    srcs = [
+        "schemas/sample.yaml",
+        "schemas/policies.yaml",
+    ],
+    testonly = True,
+)
+
+# Code generation targets
+weaver_generate(
+    name = "generated_typescript",
+    registries = [":sample_schemas"],
+    target = "typescript-target",
+    args = ["--quiet"],
+    testonly = True,
+)
+
+weaver_generate(
+    name = "generated_go",
+    registries = [":sample_schemas"],
+    target = "go-target",
+    args = ["--quiet"],
+    testonly = True,
+)
+
+weaver_generate(
+    name = "generated_python",
+    registries = [":sample_schemas"],
+    target = "python-target",
+    args = ["--quiet"],
+    testonly = True,
+)
+
+# Validation tests
+weaver_validate_test(
+    name = "validation_test",
+    registries = [":sample_schemas"],
+    policies = ["schemas/policies.yaml"],
+    weaver_args = ["--strict"],
+    testonly = True,
+)
+
+# Documentation generation
+weaver_docs(
+    name = "html_docs",
+    schemas = [":sample_schemas"],
+    format = "html",
+    args = ["--quiet"],
+    testonly = True,
+)
+
+weaver_docs(
+    name = "markdown_docs",
+    schemas = [":sample_schemas"],
+    format = "markdown",
+    args = ["--quiet"],
+    testonly = True,
+)
+
+# File groups for test validation
+filegroup(
+    name = "generated_files",
+    srcs = [
+        ":generated_typescript",
+        ":generated_go",
+        ":generated_python",
+        ":html_docs",
+        ":markdown_docs",
+    ],
+    testonly = True,
+)
+
+filegroup(
+    name = "schema_files",
+    srcs = [
+        "schemas/sample.yaml",
+        "schemas/policies.yaml",
+    ],
+    testonly = True,
+) 

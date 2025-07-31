@@ -1,0 +1,101 @@
+# Policy file for validating semantic conventions
+# This represents policies that a new user might want to enforce
+
+policies:
+  - id: test.policy
+    name: "Test Semantic Convention Policy"
+    description: "Basic validation policies for test semantic conventions"
+    rules:
+      - id: test.policy.required_attributes
+        name: "Required Attributes"
+        description: "Ensure required attributes are present"
+        severity: error
+        conditions:
+          - attribute: "test.service.name"
+            required: true
+            message: "Service name is required for all service spans"
+          - attribute: "test.service.version"
+            required: true
+            message: "Service version is required for all service spans"
+          - attribute: "test.database.name"
+            required: true
+            message: "Database name is required for all database spans"
+          - attribute: "test.http.method"
+            required: true
+            message: "HTTP method is required for all HTTP spans"
+
+      - id: test.policy.attribute_types
+        name: "Attribute Types"
+        description: "Ensure attributes have correct types"
+        severity: warning
+        conditions:
+          - attribute: "test.service.name"
+            type: "string"
+            message: "Service name must be a string"
+          - attribute: "test.service.version"
+            type: "string"
+            message: "Service version must be a string"
+          - attribute: "test.database.name"
+            type: "string"
+            message: "Database name must be a string"
+          - attribute: "test.http.method"
+            type: "string"
+            message: "HTTP method must be a string"
+          - attribute: "test.http.status_code"
+            type: "int"
+            message: "HTTP status code must be an integer"
+
+      - id: test.policy.http_methods
+        name: "HTTP Methods"
+        description: "Ensure HTTP methods are valid"
+        severity: error
+        conditions:
+          - attribute: "test.http.method"
+            values: ["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"]
+            message: "HTTP method must be one of the standard HTTP methods"
+
+      - id: test.policy.http_status_codes
+        name: "HTTP Status Codes"
+        description: "Ensure HTTP status codes are valid"
+        severity: warning
+        conditions:
+          - attribute: "test.http.status_code"
+            range: [100, 599]
+            message: "HTTP status code must be between 100 and 599"
+
+      - id: test.policy.service_environment
+        name: "Service Environment"
+        description: "Ensure service environment is valid"
+        severity: warning
+        conditions:
+          - attribute: "test.service.environment"
+            values: ["production", "staging", "development", "testing"]
+            message: "Service environment must be one of: production, staging, development, testing"
+
+      - id: test.policy.database_operations
+        name: "Database Operations"
+        description: "Ensure database operations are valid"
+        severity: error
+        conditions:
+          - attribute: "test.database.operation"
+            values: ["SELECT", "INSERT", "UPDATE", "DELETE", "CREATE", "DROP", "ALTER"]
+            message: "Database operation must be a valid SQL operation"
+
+      - id: test.policy.resource_attributes
+        name: "Resource Attributes"
+        description: "Ensure resource attributes are present when needed"
+        severity: warning
+        conditions:
+          - attribute: "test.resource.type"
+            required: true
+            message: "Resource type should be specified for resource spans"
+          - attribute: "test.resource.id"
+            required: false
+            message: "Resource ID is optional but recommended for identification"
+
+# Validation settings
+validation:
+  strict: true
+  allow_unknown_attributes: false
+  allow_unknown_groups: false
+  allow_unknown_resources: false 
