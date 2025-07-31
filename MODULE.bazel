@@ -1,0 +1,30 @@
+module(
+    name = "rules_weaver",
+    version = "0.1.0",
+)
+
+bazel_dep(name = "bazel_skylib", version = "1.4.2")
+
+# Weaver binary dependencies
+weaver_repository = use_extension(
+    "@rules_weaver//weaver:extensions.bzl",
+    "_weaver_repository_extension",
+    dev_dependency = True,
+)
+
+weaver_repository.download(
+    name = "weaver_binary",
+    version = "0.16.1",
+    platforms = [
+        "linux-x86_64",
+        "linux-aarch64", 
+        "darwin-x86_64",
+        "darwin-aarch64",
+        "windows-x86_64",
+    ],
+)
+
+use_repo(
+    weaver_repository,
+    "weaver_binary",
+)

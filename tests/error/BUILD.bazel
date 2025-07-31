@@ -1,0 +1,32 @@
+"""
+Error tests for OpenTelemetry Weaver rules.
+
+This directory will contain error scenario tests for handling error conditions gracefully.
+"""
+
+package(default_visibility = ["//visibility:public"])
+
+# Load unittest for test targets
+load("@bazel_skylib//lib:unittest.bzl", "unittest")
+
+# Future error test suites - to be implemented
+# load(":invalid_schema_test.bzl", "invalid_schema_test_suite")
+# load(":missing_dependency_test.bzl", "missing_dependency_test_suite")
+# load(":configuration_error_test.bzl", "configuration_error_test_suite")
+# load(":platform_error_test.bzl", "platform_error_test_suite")
+# load(":network_error_test.bzl", "network_error_test_suite")
+
+# Error test targets - to be implemented
+# unittest.make(name = "invalid_schema_test", suite = invalid_schema_test_suite)
+# unittest.make(name = "missing_dependency_test", suite = missing_dependency_test_suite)
+# unittest.make(name = "configuration_error_test", suite = configuration_error_test_suite)
+# unittest.make(name = "platform_error_test", suite = platform_error_test_suite)
+# unittest.make(name = "network_error_test", suite = network_error_test_suite)
+
+# Test suite for all error tests
+test_suite(
+    name = "all_error_tests",
+    tests = [
+        # Error tests will be added here when implemented
+    ],
+) 

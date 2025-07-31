@@ -1,0 +1,37 @@
+# Sample OpenTelemetry Weaver policy for testing
+policy:
+  name: "sample_policy"
+  version: "1.0.0"
+  
+  rules:
+    - name: "require_service_name"
+      description: "All services must have a service.name attribute"
+      type: "resource"
+      condition: "service"
+      validation:
+        required_attributes:
+          - "service.name"
+    
+    - name: "http_span_attributes"
+      description: "HTTP spans must have method and URL attributes"
+      type: "span"
+      condition: "http_request"
+      validation:
+        required_attributes:
+          - "http.method"
+          - "http.url"
+    
+    - name: "metric_naming"
+      description: "Metrics must follow naming conventions"
+      type: "metric"
+      validation:
+        naming_pattern: "^[a-z_]+$"
+    
+    - name: "attribute_types"
+      description: "Common attribute types must be consistent"
+      type: "attribute"
+      validation:
+        type_constraints:
+          "http.method": "string"
+          "http.status_code": "int"
+          "service.name": "string" 

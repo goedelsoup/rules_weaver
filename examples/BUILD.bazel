@@ -1,0 +1,11 @@
+package(default_visibility = ["//visibility:public"])
+
+# Export all example subdirectories
+exports_files([
+    "basic",
+    "intermediate", 
+    "advanced",
+])
+
+# Note: Individual .bzl files are accessible via their respective subpackages
+# e.g., //examples/basic:weaver_generate_example.bzl 

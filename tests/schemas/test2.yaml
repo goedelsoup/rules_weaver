@@ -1,0 +1,40 @@
+# Test Schema 2 - Database Service
+name: test_service_2
+version: 2.0.0
+description: A database service for Weaver rules validation
+
+resources:
+  - name: database
+    attributes:
+      - name: db.system
+        type: string
+        description: Database system (e.g., mysql, postgresql)
+      - name: db.name
+        type: string
+        description: Database name
+      - name: db.connection_string
+        type: string
+        description: Database connection string
+
+spans:
+  - name: db_query
+    attributes:
+      - name: db.statement
+        type: string
+        description: SQL query statement
+      - name: db.operation
+        type: string
+        description: Database operation (SELECT, INSERT, UPDATE, DELETE)
+      - name: db.rows_affected
+        type: int
+        description: Number of rows affected
+
+metrics:
+  - name: db_queries_total
+    type: counter
+    description: Total number of database queries
+    attributes:
+      - name: db.operation
+        type: string
+      - name: db.system
+        type: string 

@@ -1,0 +1,8 @@
+package(default_visibility = ["//visibility:public"])
+
+exports_files([
+    "weaver_comprehensive_example.bzl",
+    "weaver_toolchain_example.bzl",
+    "multi_platform_example.bzl",
+    "dependency_optimization_example.bzl",
+]) 

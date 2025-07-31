@@ -1,0 +1,48 @@
+load("//weaver:defs.bzl", "weaver_library", "weaver_schema", "weaver_generate", "weaver_validate_test", "weaver_docs")
+
+# Export schema files for testing
+exports_files([
+    "sample.yaml",
+    "another.yaml",
+    "another_policy.yaml",
+    "policy.yaml",
+    "invalid_schema.yaml",
+])
+
+# Test weaver_schema rule
+weaver_schema(
+    name = "test_schemas",
+    srcs = ["sample.yaml"],
+    visibility = ["//visibility:public"],
+)
+
+# Test weaver_generate rule
+weaver_generate(
+    name = "test_generated",
+    registries = [":test_schemas"],
+    target = "opentelemetry-proto",
+    visibility = ["//visibility:public"],
+)
+
+# Test weaver_validate_test rule
+weaver_validate_test(
+    name = "test_validation",
+    registries = [":test_schemas"],
+    visibility = ["//visibility:public"],
+)
+
+# Test weaver_docs rule
+weaver_docs(
+    name = "test_docs",
+    schemas = [":test_schemas"],
+    format = "html",
+    visibility = ["//visibility:public"],
+)
+
+# Test weaver_library rule
+weaver_library(
+    name = "test_library",
+    schemas = ["sample.yaml"],
+    target = "opentelemetry-proto",
+    visibility = ["//visibility:public"],
+) 

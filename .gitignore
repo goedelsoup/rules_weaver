@@ -1,0 +1,29 @@
+/.rhema/cache
+
+# Bazel build artifacts
+bazel-bin/
+bazel-out/
+bazel-testlogs/
+bazel-*
+
+# Bazel symlinks (on macOS/Linux)
+bazel-*
+
+# Bazel workspace state
+.bazelrc.local
+
+# IDE files that might be generated
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db

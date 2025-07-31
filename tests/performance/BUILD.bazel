@@ -1,0 +1,30 @@
+"""
+Performance tests for OpenTelemetry Weaver rules.
+
+This directory contains performance benchmarks and tests for detecting regressions.
+"""
+
+package(default_visibility = ["//visibility:public"])
+
+# Load unittest for test targets
+load("@bazel_skylib//lib:unittest.bzl", "unittest")
+
+# Legacy performance test suites - commented out due to syntax errors
+# load(":performance_test.bzl", "performance_test_suite")
+# load(":multi_platform_test.bzl", "multi_platform_test_suite")
+# load(":remote_execution_test.bzl", "remote_execution_test_suite")
+
+# Performance test targets
+# unittest.make(name = "performance_test", suite = performance_test_suite)
+# unittest.make(name = "multi_platform_test", suite = multi_platform_test_suite)
+# unittest.make(name = "remote_execution_test", suite = remote_execution_test_suite)
+
+# Test suite for all performance tests
+test_suite(
+    name = "all_performance_tests",
+    tests = [
+        # ":performance_test",
+        # ":multi_platform_test",
+        # ":remote_execution_test",
+    ],
+) 

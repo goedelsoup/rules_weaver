@@ -1,0 +1,6 @@
+package(default_visibility = ["//weaver:__subpackages__"])
+
+exports_files([
+    "default.html.template",
+    "default.md.template",
+]) 

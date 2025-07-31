@@ -1,0 +1,27 @@
+package(default_visibility = ["//visibility:public"])
+
+# Note: Weaver rules are accessible via their subpackage paths:
+# //weaver:repositories.bzl
+# //weaver:toolchains.bzl
+# //weaver:toolchain_type.bzl
+
+# Build test for the weaver package
+filegroup(
+    name = "weaver_rules",
+    srcs = [
+        "//weaver:build_test",
+    ],
+    testonly = True,
+)
+
+# Documentation
+filegroup(
+    name = "documentation",
+    srcs = glob(["docs/**/*.md"]),
+)
+
+# Examples
+filegroup(
+    name = "examples",
+    srcs = glob(["examples/**/*.bzl"], allow_empty = True),
+) 

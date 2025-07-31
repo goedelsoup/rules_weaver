@@ -1,0 +1,40 @@
+# Another sample OpenTelemetry schema for testing
+schema:
+  name: "database_service"
+  version: "1.0.0"
+  
+  resources:
+    - name: "database"
+      attributes:
+        - name: "db.system"
+          type: "string"
+          description: "Database system (e.g., mysql, postgresql)"
+        - name: "db.name"
+          type: "string"
+          description: "Database name"
+        - name: "db.connection_string"
+          type: "string"
+          description: "Database connection string"
+  
+  spans:
+    - name: "db_query"
+      attributes:
+        - name: "db.statement"
+          type: "string"
+          description: "Database query statement"
+        - name: "db.operation"
+          type: "string"
+          description: "Database operation (e.g., SELECT, INSERT)"
+        - name: "db.rows_affected"
+          type: "int"
+          description: "Number of rows affected"
+  
+  metrics:
+    - name: "db_queries_total"
+      type: "counter"
+      description: "Total number of database queries"
+      attributes:
+        - name: "db.operation"
+          type: "string"
+        - name: "db.system"
+          type: "string" 

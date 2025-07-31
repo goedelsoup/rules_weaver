@@ -1,0 +1,37 @@
+# Test Schema 1 - Basic OpenTelemetry Service
+name: test_service_1
+version: 1.0.0
+description: A basic test service for Weaver rules validation
+
+resources:
+  - name: service
+    attributes:
+      - name: service.name
+        type: string
+        description: Name of the service
+      - name: service.version
+        type: string
+        description: Version of the service
+
+spans:
+  - name: http_request
+    attributes:
+      - name: http.method
+        type: string
+        description: HTTP method
+      - name: http.url
+        type: string
+        description: HTTP URL
+      - name: http.status_code
+        type: int
+        description: HTTP status code
+
+metrics:
+  - name: http_requests_total
+    type: counter
+    description: Total number of HTTP requests
+    attributes:
+      - name: http.method
+        type: string
+      - name: http.status_code
+        type: int 

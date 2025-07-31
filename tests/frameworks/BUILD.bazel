@@ -1,0 +1,25 @@
+"""
+Testing frameworks for OpenTelemetry Weaver rules.
+
+This directory contains the core testing frameworks and utilities.
+"""
+
+package(default_visibility = ["//visibility:public"])
+
+# Load unittest for test targets
+load("@bazel_skylib//lib:unittest.bzl", "unittest")
+
+# Testing framework files - these are loaded by other test files
+# load(":unit_test_framework.bzl", "unit_test_framework")
+# load(":integration_test_framework.bzl", "integration_test_framework")
+# load(":performance_test_framework.bzl", "performance_test_framework")
+# load(":error_test_framework.bzl", "error_test_framework")
+# load(":comprehensive_test_runner.bzl", "comprehensive_test_runner")
+
+# Test suite for all framework tests
+test_suite(
+    name = "all_framework_tests",
+    tests = [
+        # Framework tests would be added here when implemented
+    ],
+) 

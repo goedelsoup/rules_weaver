@@ -1,0 +1,23 @@
+# Invalid schema for testing error handling
+openapi: 3.0.0
+info:
+  title: Invalid API
+  version: 1.0.0
+paths:
+  /test:
+    get:
+      summary: Test endpoint
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NonExistentSchema'  # This will cause an error
+                type: object
+                properties:
+                  invalid_property:
+                    type: invalid_type  # This is also invalid
+components:
+  schemas:
+    # Missing schema that is referenced above 

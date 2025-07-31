@@ -1,0 +1,40 @@
+# Sample OpenTelemetry schema for testing
+schema:
+  name: "sample_service"
+  version: "1.0.0"
+  
+  resources:
+    - name: "service"
+      attributes:
+        - name: "service.name"
+          type: "string"
+          description: "Name of the service"
+        - name: "service.version"
+          type: "string"
+          description: "Version of the service"
+        - name: "service.instance.id"
+          type: "string"
+          description: "Instance ID of the service"
+  
+  spans:
+    - name: "http_request"
+      attributes:
+        - name: "http.method"
+          type: "string"
+          description: "HTTP method"
+        - name: "http.url"
+          type: "string"
+          description: "HTTP URL"
+        - name: "http.status_code"
+          type: "int"
+          description: "HTTP status code"
+  
+  metrics:
+    - name: "http_requests_total"
+      type: "counter"
+      description: "Total number of HTTP requests"
+      attributes:
+        - name: "http.method"
+          type: "string"
+        - name: "http.status_code"
+          type: "string" 

@@ -1,0 +1,27 @@
+load("@bazel_skylib//rules:build_test.bzl", "build_test")
+load(":toolchain_type.bzl", "toolchain_type")
+
+package(default_visibility = ["//visibility:public"])
+
+# Toolchain type
+toolchain_type(
+    name = "toolchain_type",
+)
+
+# Repository rule
+exports_files([
+    "repositories.bzl",
+    "toolchains.bzl",
+    "toolchain_type.bzl",
+    "defs.bzl",
+    "providers.bzl",
+    "platform_constraints.bzl",
+    "aspects.bzl",
+    "extensions.bzl",
+])
+
+# Build test to ensure the package is valid
+build_test(
+    name = "build_test",
+    targets = [":toolchain_type"],
+) 

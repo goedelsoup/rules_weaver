@@ -1,0 +1,70 @@
+"""
+Test utilities for OpenTelemetry Weaver rules.
+
+This directory contains test utilities, mock objects, and helper functions.
+"""
+
+package(default_visibility = ["//visibility:public"])
+
+# Mock Weaver binary
+py_binary(
+    name = "mock_weaver",
+    srcs = ["mock_weaver.py"],
+    visibility = ["//visibility:public"],
+)
+
+# Mock Weaver toolchain
+load(":mock_weaver_repository.bzl", "mock_weaver_toolchain")
+mock_weaver_toolchain(
+    name = "mock_weaver_toolchain",
+    weaver_binary = "//tests/utils:mock_weaver",
+)
+
+# Test runner scripts
+py_binary(
+    name = "run_integration_tests",
+    srcs = ["run_integration_tests.py"],
+    visibility = ["//visibility:public"],
+)
+
+py_binary(
+    name = "run_real_weaver_tests",
+    srcs = ["run_real_weaver_tests.py"],
+    visibility = ["//visibility:public"],
+)
+
+# Real Weaver test configuration
+load(":real_weaver_test_config.bzl", 
+     "real_weaver_test_suite",
+     "real_weaver_ci_test_suite", 
+     "real_weaver_nightly_test_suite")
+load(":simple_real_weaver_test.bzl", "simple_real_weaver_test")
+
+# Simple test for real Weaver integration
+# Temporarily disabled due to real_weaver repository issues
+# load("@rules_weaver//weaver:defs.bzl", "weaver_validate_test", "weaver_generate")
+
+# weaver_validate_test(
+#     name = "simple_real_weaver_test",
+#     registries = [],  # Use default registry
+#     weaver_args = ["--quiet"],
+#     testonly = True,
+# )
+
+# weaver_generate(
+#     name = "simple_real_weaver_generate",
+#     registries = [],  # Use default registry
+#     target = "opentelemetry-proto",
+#     args = ["--quiet"],
+#     testonly = True,
+# )
+
+# Test suite for all utility tests
+test_suite(
+    name = "all_utils_tests",
+    tests = [
+        # Temporarily disabled due to real_weaver repository issues
+        # ":simple_real_weaver_test",
+        # ":simple_real_weaver_generate",
+    ],
+) 

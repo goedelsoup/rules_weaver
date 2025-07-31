@@ -1,0 +1,36 @@
+# Another sample OpenTelemetry Weaver policy for testing
+policy:
+  name: "another_policy"
+  version: "1.0.0"
+  
+  rules:
+    - name: "require_version"
+      description: "All schemas must have a version"
+      type: "schema"
+      validation:
+        required_fields:
+          - "version"
+    
+    - name: "description_required"
+      description: "All attributes must have descriptions"
+      type: "attribute"
+      validation:
+        required_fields:
+          - "description"
+    
+    - name: "no_deprecated_attributes"
+      description: "No deprecated attribute names allowed"
+      type: "attribute"
+      validation:
+        forbidden_patterns:
+          - "deprecated"
+          - "legacy"
+    
+    - name: "consistent_naming"
+      description: "Use consistent naming conventions"
+      type: "global"
+      validation:
+        naming_conventions:
+          attributes: "snake_case"
+          services: "lowercase"
+          metrics: "snake_case" 
