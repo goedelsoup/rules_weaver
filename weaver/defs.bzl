@@ -41,9 +41,11 @@ def _weaver_schema_impl(ctx):
             transitive_deps.append(dep.weaver_schema_info)
     
     # 3. Create metadata
+    extensions = []
+    extensions = [f.extension for f in schema_files if f.extension not in extensions]
     metadata = {
         "schema_count": len(schema_files),
-        "formats": list(set([f.extension for f in schema_files])),
+        "formats": list(extensions),
         "performance_optimized": True,
     }
     
