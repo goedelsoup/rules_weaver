@@ -413,4 +413,4 @@ def weaver_dependencies():
 def weaver_register_toolchains():
     """Register Weaver toolchains for all supported platforms."""
     # Register the toolchain from the real_weaver repository
-    native.register_toolchains("@real_weaver//:weaver_toolchain") 
+    native.register_toolchains("@rules_weaver//:weaver_toolchain") 
