@@ -1,0 +1,163 @@
+name: Manual Tests
+
+on:
+  workflow_dispatch:
+    inputs:
+      test_category:
+        description: 'Test category to run'
+        required: true
+        default: 'comprehensive'
+        type: choice
+        options:
+          - unit
+          - integration
+          - schema-build
+          - comprehensive
+          - all
+      platform:
+        description: 'Platform to run tests on'
+        required: true
+        default: 'linux'
+        type: choice
+        options:
+          - linux
+          - macos
+          - both
+
+jobs:
+  manual-tests:
+    name: Manual Tests (${{ github.event.inputs.test_category }} on ${{ github.event.inputs.platform }})
+    runs-on: ${{ github.event.inputs.platform == 'both' && 'ubuntu-latest' || github.event.inputs.platform == 'macos' && 'macos-latest' || 'ubuntu-latest' }}
+    timeout-minutes: 60
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Setup Bazel
+      uses: bazelbuild/setup-bazelisk@v3
+
+    - name: Cache Bazel
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cache/bazel
+          ~/.cache/bazelisk
+        key: ${{ runner.os }}-manual-${{ github.event.inputs.test_category }}-${{ hashFiles('**/MODULE.bazel', '**/WORKSPACE') }}
+        restore-keys: |
+          ${{ runner.os }}-manual-${{ github.event.inputs.test_category }}-
+
+    - name: Run Unit Tests
+      if: github.event.inputs.test_category == 'unit' || github.event.inputs.test_category == 'all'
+      run: |
+        bazel test //tests/unit:all_unit_tests \
+          --test_output=errors \
+          --test_verbose_timeout_warnings \
+          --verbose_failures \
+          --show_timestamps
+
+    - name: Run Integration Tests
+      if: github.event.inputs.test_category == 'integration' || github.event.inputs.test_category == 'all'
+      run: |
+        bazel test //tests/integration:all_integration_tests \
+          --test_output=errors \
+          --test_verbose_timeout_warnings \
+          --verbose_failures \
+          --show_timestamps
+
+    - name: Run Schema Build Tests
+      if: github.event.inputs.test_category == 'schema-build' || github.event.inputs.test_category == 'all'
+      run: |
+        bazel build //tests/schemas:all \
+          --verbose_failures \
+          --show_timestamps
+
+    - name: Run Comprehensive Tests
+      if: github.event.inputs.test_category == 'comprehensive' || github.event.inputs.test_category == 'all'
+      run: |
+        bazel test //tests:comprehensive_test_suite \
+          --test_output=errors \
+          --test_verbose_timeout_warnings \
+          --verbose_failures \
+          --show_timestamps
+
+    - name: Upload test results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: manual-test-results-${{ github.event.inputs.test_category }}-${{ github.event.inputs.platform }}
+        path: |
+          bazel-testlogs/
+          bazel-bin/
+        retention-days: 30
+
+  manual-tests-macos:
+    name: Manual Tests macOS (${{ github.event.inputs.test_category }})
+    runs-on: macos-latest
+    if: github.event.inputs.platform == 'both'
+    timeout-minutes: 60
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Setup Bazel
+      uses: bazelbuild/setup-bazelisk@v3
+
+    - name: Cache Bazel
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cache/bazel
+          ~/.cache/bazelisk
+        key: ${{ runner.os }}-manual-${{ github.event.inputs.test_category }}-${{ hashFiles('**/MODULE.bazel', '**/WORKSPACE') }}
+        restore-keys: |
+          ${{ runner.os }}-manual-${{ github.event.inputs.test_category }}-
+
+    - name: Run Unit Tests
+      if: github.event.inputs.test_category == 'unit' || github.event.inputs.test_category == 'all'
+      run: |
+        bazel test //tests/unit:all_unit_tests \
+          --test_output=errors \
+          --test_verbose_timeout_warnings \
+          --verbose_failures \
+          --show_timestamps
+
+    - name: Run Integration Tests
+      if: github.event.inputs.test_category == 'integration' || github.event.inputs.test_category == 'all'
+      run: |
+        bazel test //tests/integration:all_integration_tests \
+          --test_output=errors \
+          --test_verbose_timeout_warnings \
+          --verbose_failures \
+          --show_timestamps
+
+    - name: Run Schema Build Tests
+      if: github.event.inputs.test_category == 'schema-build' || github.event.inputs.test_category == 'all'
+      run: |
+        bazel build //tests/schemas:all \
+          --verbose_failures \
+          --show_timestamps
+
+    - name: Run Comprehensive Tests
+      if: github.event.inputs.test_category == 'comprehensive' || github.event.inputs.test_category == 'all'
+      run: |
+        bazel test //tests:comprehensive_test_suite \
+          --test_output=errors \
+          --test_verbose_timeout_warnings \
+          --verbose_failures \
+          --show_timestamps
+
+    - name: Upload test results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: manual-test-results-${{ github.event.inputs.test_category }}-macos
+        path: |
+          bazel-testlogs/
+          bazel-bin/
+        retention-days: 30 

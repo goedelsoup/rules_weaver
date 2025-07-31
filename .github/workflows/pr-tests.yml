@@ -1,0 +1,401 @@
+name: Pull Request Tests
+
+on:
+  pull_request:
+    branches: [ main, master ]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - '.github/ISSUE_TEMPLATE/**'
+      - '.github/CODEOWNERS'
+      - '.github/SECURITY.md'
+  push:
+    branches: [ main, master ]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - '.github/ISSUE_TEMPLATE/**'
+      - '.github/CODEOWNERS'
+      - '.github/SECURITY.md'
+
+jobs:
+  # Unit Tests - Linux x86_64
+  unit-tests-linux:
+    name: Unit Tests (Linux x86_64)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Setup Bazel
+      uses: bazelbuild/setup-bazelisk@v3
+
+    - name: Cache Bazel
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cache/bazel
+          ~/.cache/bazelisk
+        key: ${{ runner.os }}-bazel-${{ hashFiles('**/MODULE.bazel', '**/WORKSPACE') }}
+        restore-keys: |
+          ${{ runner.os }}-bazel-
+
+    - name: Run Unit Tests
+      run: |
+        bazel test //tests/unit:all_unit_tests \
+          --test_output=errors \
+          --test_verbose_timeout_warnings \
+          --verbose_failures \
+          --show_timestamps
+
+    - name: Upload test results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: unit-test-results-linux
+        path: bazel-testlogs/
+        retention-days: 7
+
+  # Unit Tests - macOS x86_64
+  unit-tests-macos:
+    name: Unit Tests (macOS x86_64)
+    runs-on: macos-latest
+    timeout-minutes: 30
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Setup Bazel
+      uses: bazelbuild/setup-bazelisk@v3
+
+    - name: Cache Bazel
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cache/bazel
+          ~/.cache/bazelisk
+        key: ${{ runner.os }}-bazel-${{ hashFiles('**/MODULE.bazel', '**/WORKSPACE') }}
+        restore-keys: |
+          ${{ runner.os }}-bazel-
+
+    - name: Run Unit Tests
+      run: |
+        bazel test //tests/unit:all_unit_tests \
+          --test_output=errors \
+          --test_verbose_timeout_warnings \
+          --verbose_failures \
+          --show_timestamps
+
+    - name: Upload test results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: unit-test-results-macos
+        path: bazel-testlogs/
+        retention-days: 7
+
+  # Integration Tests - Linux x86_64
+  integration-tests-linux:
+    name: Integration Tests (Linux x86_64)
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Setup Bazel
+      uses: bazelbuild/setup-bazelisk@v3
+
+    - name: Cache Bazel
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cache/bazel
+          ~/.cache/bazelisk
+        key: ${{ runner.os }}-integration-bazel-${{ hashFiles('**/MODULE.bazel', '**/WORKSPACE') }}
+        restore-keys: |
+          ${{ runner.os }}-integration-bazel-
+
+    - name: Run Integration Tests
+      run: |
+        bazel test //tests/integration:all_integration_tests \
+          --test_output=errors \
+          --test_verbose_timeout_warnings \
+          --verbose_failures \
+          --show_timestamps
+
+    - name: Upload test results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: integration-test-results-linux
+        path: bazel-testlogs/
+        retention-days: 7
+
+  # Integration Tests - macOS x86_64
+  integration-tests-macos:
+    name: Integration Tests (macOS x86_64)
+    runs-on: macos-latest
+    timeout-minutes: 45
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Setup Bazel
+      uses: bazelbuild/setup-bazelisk@v3
+
+    - name: Cache Bazel
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cache/bazel
+          ~/.cache/bazelisk
+        key: ${{ runner.os }}-integration-bazel-${{ hashFiles('**/MODULE.bazel', '**/WORKSPACE') }}
+        restore-keys: |
+          ${{ runner.os }}-integration-bazel-
+
+    - name: Run Integration Tests
+      run: |
+        bazel test //tests/integration:all_integration_tests \
+          --test_output=errors \
+          --test_verbose_timeout_warnings \
+          --verbose_failures \
+          --show_timestamps
+
+    - name: Upload test results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: integration-test-results-macos
+        path: bazel-testlogs/
+        retention-days: 7
+
+  # Schema Build Tests - Linux x86_64
+  schema-build-tests-linux:
+    name: Schema Build Tests (Linux x86_64)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Setup Bazel
+      uses: bazelbuild/setup-bazelisk@v3
+
+    - name: Cache Bazel
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cache/bazel
+          ~/.cache/bazelisk
+        key: ${{ runner.os }}-schema-bazel-${{ hashFiles('**/MODULE.bazel', '**/WORKSPACE') }}
+        restore-keys: |
+          ${{ runner.os }}-schema-bazel-
+
+    - name: Build Schema Targets
+      run: |
+        bazel build //tests/schemas:all \
+          --verbose_failures \
+          --show_timestamps
+
+    - name: Upload build results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: schema-build-results-linux
+        path: bazel-bin/
+        retention-days: 7
+
+  # Schema Build Tests - macOS x86_64
+  schema-build-tests-macos:
+    name: Schema Build Tests (macOS x86_64)
+    runs-on: macos-latest
+    timeout-minutes: 20
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Setup Bazel
+      uses: bazelbuild/setup-bazelisk@v3
+
+    - name: Cache Bazel
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cache/bazel
+          ~/.cache/bazelisk
+        key: ${{ runner.os }}-schema-bazel-${{ hashFiles('**/MODULE.bazel', '**/WORKSPACE') }}
+        restore-keys: |
+          ${{ runner.os }}-schema-bazel-
+
+    - name: Build Schema Targets
+      run: |
+        bazel build //tests/schemas:all \
+          --verbose_failures \
+          --show_timestamps
+
+    - name: Upload build results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: schema-build-results-macos
+        path: bazel-bin/
+        retention-days: 7
+
+  # Comprehensive Test Suite - Linux x86_64
+  comprehensive-tests-linux:
+    name: Comprehensive Tests (Linux x86_64)
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    needs: [unit-tests-linux, integration-tests-linux, schema-build-tests-linux]
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Setup Bazel
+      uses: bazelbuild/setup-bazelisk@v3
+
+    - name: Cache Bazel
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cache/bazel
+          ~/.cache/bazelisk
+        key: ${{ runner.os }}-comprehensive-bazel-${{ hashFiles('**/MODULE.bazel', '**/WORKSPACE') }}
+        restore-keys: |
+          ${{ runner.os }}-comprehensive-bazel-
+
+    - name: Run Comprehensive Test Suite
+      run: |
+        bazel test //tests:comprehensive_test_suite \
+          --test_output=errors \
+          --test_verbose_timeout_warnings \
+          --verbose_failures \
+          --show_timestamps
+
+    - name: Upload comprehensive test results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: comprehensive-test-results-linux
+        path: bazel-testlogs/
+        retention-days: 7
+
+  # Code Quality Checks
+  code-quality:
+    name: Code Quality Checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Setup Bazel
+      uses: bazelbuild/setup-bazelisk@v3
+
+    - name: Cache Bazel
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cache/bazel
+          ~/.cache/bazelisk
+        key: ${{ runner.os }}-quality-bazel-${{ hashFiles('**/MODULE.bazel', '**/WORKSPACE') }}
+        restore-keys: |
+          ${{ runner.os }}-quality-bazel-
+
+    - name: Check BUILD file syntax
+      run: |
+        bazel query //... --output=location
+
+    - name: Check for unused dependencies
+      run: |
+        bazel query --noimplicit_deps "deps(//tests/...)" --output=build
+
+    - name: Validate workspace setup
+      run: |
+        bazel info
+        bazel query //tests/... --output=package
+
+  # Test Summary
+  test-summary:
+    name: Test Summary
+    runs-on: ubuntu-latest
+    needs: [
+      unit-tests-linux, 
+      unit-tests-macos, 
+      integration-tests-linux, 
+      integration-tests-macos,
+      schema-build-tests-linux,
+      schema-build-tests-macos,
+      comprehensive-tests-linux,
+      code-quality
+    ]
+    if: always()
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Test Summary
+      run: |
+        echo "## Test Results Summary" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### Unit Tests" >> $GITHUB_STEP_SUMMARY
+        echo "- Linux x86_64: ${{ needs.unit-tests-linux.result }}" >> $GITHUB_STEP_SUMMARY
+        echo "- macOS x86_64: ${{ needs.unit-tests-macos.result }}" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### Integration Tests" >> $GITHUB_STEP_SUMMARY
+        echo "- Linux x86_64: ${{ needs.integration-tests-linux.result }}" >> $GITHUB_STEP_SUMMARY
+        echo "- macOS x86_64: ${{ needs.integration-tests-macos.result }}" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### Schema Build Tests" >> $GITHUB_STEP_SUMMARY
+        echo "- Linux x86_64: ${{ needs.schema-build-tests-linux.result }}" >> $GITHUB_STEP_SUMMARY
+        echo "- macOS x86_64: ${{ needs.schema-build-tests-macos.result }}" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### Comprehensive Tests" >> $GITHUB_STEP_SUMMARY
+        echo "- Linux x86_64: ${{ needs.comprehensive-tests-linux.result }}" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### Code Quality" >> $GITHUB_STEP_SUMMARY
+        echo "- Quality Checks: ${{ needs.code-quality.result }}" >> $GITHUB_STEP_SUMMARY
+
+    - name: Overall Status
+      run: |
+        if [[ "${{ needs.unit-tests-linux.result }}" == "success" && \
+              "${{ needs.unit-tests-macos.result }}" == "success" && \
+              "${{ needs.integration-tests-linux.result }}" == "success" && \
+              "${{ needs.integration-tests-macos.result }}" == "success" && \
+              "${{ needs.schema-build-tests-linux.result }}" == "success" && \
+              "${{ needs.schema-build-tests-macos.result }}" == "success" && \
+              "${{ needs.comprehensive-tests-linux.result }}" == "success" && \
+              "${{ needs.code-quality.result }}" == "success" ]]; then
+          echo "✅ All tests passed!"
+          exit 0
+        else
+          echo "❌ Some tests failed. Please check the individual job results."
+          exit 1
+        fi 
