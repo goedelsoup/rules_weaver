@@ -70,8 +70,8 @@ for code generation and validation operations, optimized for remote execution.
 
 def _get_weaver_toolchain(ctx):
     """Get the Weaver toolchain for the current context with enhanced error handling."""
-    if "//weaver:toolchain_type" in ctx.toolchains:
-        toolchain = ctx.toolchains["//weaver:toolchain_type"]
+    if "//rules_weaver:toolchain_type" in ctx.toolchains:
+        toolchain = ctx.toolchains["//rules_weaver:toolchain_type"]
         if toolchain:
             return toolchain
         else:
