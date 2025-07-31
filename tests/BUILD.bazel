@@ -156,6 +156,7 @@ test_suite(
     tests = [
         "//tests/integration:all_integration_tests",
         "//tests/utils:all_utils_tests",
+        "//tests/e2e:e2e_test_suite",
     ],
 )
 

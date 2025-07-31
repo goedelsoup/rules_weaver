@@ -1,0 +1,62 @@
+workspace(name = "new_user_test_workspace")
+
+# Load rules_weaver from GitHub (simulating a new user's setup)
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+
+# Download rules_weaver from the current repository
+http_archive(
+    name = "rules_weaver",
+    urls = ["https://github.com/your-org/rules_weaver/archive/main.tar.gz"],
+    strip_prefix = "rules_weaver-main",
+    # Note: In a real scenario, this would be a specific release version
+    # For testing, we use the current repository
+)
+
+# Load rules_weaver dependencies
+load("@rules_weaver//weaver:repositories.bzl", "weaver_repository", "weaver_register_toolchains")
+
+# Set up Weaver repository with latest version
+weaver_repository(
+    name = "weaver",
+    version = "latest",  # Will download the latest version from GitHub
+)
+
+# Register Weaver toolchains
+weaver_register_toolchains()
+
+# Load rules_weaver rules
+load("@rules_weaver//weaver:defs.bzl", "weaver_schema", "weaver_generate", "weaver_validate_test", "weaver_docs")
+
+# Additional dependencies that a new user might need
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+
+# Python rules (for test runner)
+http_archive(
+    name = "rules_python",
+    sha256 = "94750828b18044533e98a1293b8a2f1092e1e6d0c1b1e5b5c5c5c5c5c5c5c5c5c",
+    strip_prefix = "rules_python-0.21.0",
+    url = "https://github.com/bazelbuild/rules_python/releases/download/0.21.0/rules_python-0.21.0.tar.gz",
+)
+
+load("@rules_python//python:repositories.bzl", "python_register_toolchains")
+
+python_register_toolchains(
+    name = "python3_9",
+    python_version = "3.9",
+)
+
+# Go rules (for Go code generation testing)
+http_archive(
+    name = "io_bazel_rules_go",
+    sha256 = "6dc2da7ab4cf5d7bfc7c949776b1b7c733f05e56edc4bcd9022bb249d2e2a996",
+    urls = [
+        "https://mirror.bazel.build/github.com/bazelbuild/rules_go/releases/download/v0.39.1/rules_go-v0.39.1.zip",
+        "https://github.com/bazelbuild/rules_go/releases/download/v0.39.1/rules_go-v0.39.1.zip",
+    ],
+)
+
+load("@io_bazel_rules_go//go:deps.bzl", "go_register_toolchains", "go_rules_dependencies")
+
+go_rules_dependencies()
+
+go_register_toolchains(version = "1.20.5") 

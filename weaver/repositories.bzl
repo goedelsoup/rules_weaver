@@ -13,6 +13,7 @@ load(":platform_constraints.bzl",
      "is_windows_platform",
      "get_platform_specific_binary_name",
      "normalize_path")
+load(":checksums.bzl", "get_weaver_checksum")
 
 # Weaver 0.16.1 SHA256 hashes for all supported platforms
 # Note: These are placeholder values. For production use, provide actual SHA256 hashes.
@@ -95,11 +96,8 @@ def _get_download_urls(version, platform, urls = None):
 
 def _get_sha256_for_platform(version, platform):
     """Get SHA256 hash for the specified version and platform."""
-    if version == "0.16.1":
-        return WEAVER_0_16_1_SHA256.get(platform)
-    else:
-        # For other versions, return None to let Bazel compute it
-        return None
+    # Use the new dynamic checksum system
+    return get_weaver_checksum(version, platform)
 
 def _find_weaver_binary(repository_ctx, platform):
     """Find the Weaver binary in the downloaded archive with multi-platform compatibility."""
@@ -218,13 +216,15 @@ def _weaver_repository_impl(repository_ctx):
         repository_ctx.attr.urls,
     )
     
-    # Get SHA256 hash for the platform
+    # Get SHA256 hash for the platform with fallback strategies
     sha256 = repository_ctx.attr.sha256 or _get_sha256_for_platform(
         repository_ctx.attr.version, platform
     )
     
-    # Download the archive
+    # Download the archive with enhanced error handling
     archive_path = None
+    download_success = False
+    
     for url in urls:
         output_name = "weaver-{}-{}.{}".format(
             repository_ctx.attr.version, 
@@ -232,6 +232,7 @@ def _weaver_repository_impl(repository_ctx):
             "zip" if url.endswith(".zip") else "tar.xz"
         )
         
+        # Download the file
         if sha256:
             result = repository_ctx.download(
                 url = url,
@@ -239,16 +240,30 @@ def _weaver_repository_impl(repository_ctx):
                 output = output_name,
             )
         else:
+            # Auto-compute checksum if not provided
             result = repository_ctx.download(
                 url = url,
                 output = output_name,
             )
+            
+            # If download succeeded without checksum, compute and cache it
+            if result.success and not sha256:
+                computed_sha256 = _compute_file_checksum(repository_ctx, output_name)
+                if computed_sha256:
+                    # Cache the computed checksum for future use
+                    _cache_checksum(repository_ctx, repository_ctx.attr.version, platform, computed_sha256)
+                    print("Computed and cached checksum for {}: {}".format(platform, computed_sha256))
+        
         if result.success:
             archive_path = output_name
+            download_success = True
             break
+        else:
+            print("Failed to download from {}: {}".format(url, result.error))
+            continue
     
-    if not archive_path:
-        fail("Failed to download Weaver binary from any URL: {}".format(urls))
+    if not download_success:
+        fail("Failed to download Weaver binary from any URL: {}. Please check network connectivity and try again.".format(urls))
     
     # Extract the archive
     _extract_archive(repository_ctx, archive_path, platform)
@@ -263,6 +278,59 @@ def _weaver_repository_impl(repository_ctx):
     # Create platform-specific metadata
     metadata = get_platform_metadata(platform)
     repository_ctx.file("platform_metadata.json", json.encode(metadata))
+
+def _compute_file_checksum(repository_ctx, file_path):
+    """Compute SHA256 checksum of a file."""
+    
+    # Use platform-appropriate checksum command
+    if repository_ctx.os.name == "windows":
+        # Windows: use PowerShell
+        result = repository_ctx.execute([
+            "powershell", "-Command", 
+            "Get-FileHash -Algorithm SHA256 -Path '{}' | Select-Object -ExpandProperty Hash".format(file_path)
+        ])
+    else:
+        # Unix-like: use shasum
+        result = repository_ctx.execute([
+            "shasum", "-a", "256", file_path
+        ])
+    
+    if result.return_code != 0:
+        print("Warning: Failed to compute checksum: {}".format(result.stderr))
+        return None
+    
+    # Extract checksum from output
+    if repository_ctx.os.name == "windows":
+        checksum = result.stdout.strip()
+    else:
+        # shasum output format: "checksum filename"
+        checksum = result.stdout.split()[0]
+    
+    return checksum
+
+def _cache_checksum(repository_ctx, version, platform, checksum):
+    """Cache computed checksum for future use."""
+    
+    # Create a cache file with the checksum
+    cache_content = """
+# Cached checksum for Weaver {} on {}
+# Generated automatically on {}
+{}
+
+# Usage: Add this checksum to weaver/checksums.bzl
+""".format(
+        version,
+        platform,
+        repository_ctx.execute(["date"]).stdout.strip(),
+        checksum
+    )
+    
+    cache_file = "checksum_cache_{}_{}.txt".format(
+        version.replace(".", "_"),
+        platform.replace("-", "_")
+    )
+    
+    repository_ctx.file(cache_file, cache_content)
 
 def _create_build_file(repository_ctx, binary_path, platform):
     """Create BUILD file with platform-specific configuration."""
