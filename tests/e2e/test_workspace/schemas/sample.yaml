@@ -1,0 +1,114 @@
+# Sample Semantic Convention Schema for New User Testing
+# This represents a simple semantic convention that a new user might create
+
+groups:
+  - id: test.service
+    type: span
+    brief: "Test service semantic conventions"
+    note: "This is a sample schema for testing rules_weaver functionality"
+    attributes:
+      - id: test.service.name
+        type: string
+        brief: "The name of the test service"
+        examples:
+          - value: "my-test-service"
+            note: "A typical service name"
+      - id: test.service.version
+        type: string
+        brief: "The version of the test service"
+        examples:
+          - value: "1.0.0"
+            note: "Semantic versioning format"
+      - id: test.service.environment
+        type: string
+        brief: "The environment where the service is running"
+        examples:
+          - value: "production"
+            note: "Production environment"
+          - value: "staging"
+            note: "Staging environment"
+          - value: "development"
+            note: "Development environment"
+
+  - id: test.database
+    type: span
+    brief: "Test database semantic conventions"
+    note: "Database-related attributes for testing"
+    attributes:
+      - id: test.database.name
+        type: string
+        brief: "The name of the database"
+        examples:
+          - value: "users_db"
+            note: "Database name"
+      - id: test.database.operation
+        type: string
+        brief: "The database operation being performed"
+        examples:
+          - value: "SELECT"
+            note: "Read operation"
+          - value: "INSERT"
+            note: "Write operation"
+          - value: "UPDATE"
+            note: "Update operation"
+          - value: "DELETE"
+            note: "Delete operation"
+
+  - id: test.http
+    type: span
+    brief: "Test HTTP semantic conventions"
+    note: "HTTP-related attributes for testing"
+    attributes:
+      - id: test.http.method
+        type: string
+        brief: "The HTTP method"
+        examples:
+          - value: "GET"
+            note: "HTTP GET method"
+          - value: "POST"
+            note: "HTTP POST method"
+          - value: "PUT"
+            note: "HTTP PUT method"
+          - value: "DELETE"
+            note: "HTTP DELETE method"
+      - id: test.http.status_code
+        type: int
+        brief: "The HTTP status code"
+        examples:
+          - value: 200
+            note: "Success"
+          - value: 404
+            note: "Not found"
+          - value: 500
+            note: "Internal server error"
+      - id: test.http.url
+        type: string
+        brief: "The HTTP URL"
+        examples:
+          - value: "https://api.example.com/v1/users"
+            note: "API endpoint URL"
+
+# Resource attributes
+resources:
+  - id: test.resource
+    brief: "Test resource semantic conventions"
+    note: "Resource attributes for testing"
+    attributes:
+      - id: test.resource.type
+        type: string
+        brief: "The type of the resource"
+        examples:
+          - value: "service"
+            note: "Service resource"
+          - value: "database"
+            note: "Database resource"
+          - value: "api"
+            note: "API resource"
+      - id: test.resource.id
+        type: string
+        brief: "The unique identifier of the resource"
+        examples:
+          - value: "service-123"
+            note: "Service identifier"
+          - value: "db-456"
+            note: "Database identifier" 
